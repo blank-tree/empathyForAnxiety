@@ -6,15 +6,15 @@
 unsigned long currentTime = 0;
 
 // Transmit and receive with shiftr.io
-const char DEVICE_NAME[] = "anxiety";
+const char DEVICE_NAME[] = "empathy";
 const char SHIFTRIO_KEY[] = "11773d67";
 const char SHIFTRIO_SECRET[] = "a2ad7ed0849fb6b6";
 const char ssid[] = "BRIDGE";
 const char pass[] = "internet";
-const char PUBLISH_BPM[] = "/anxiety-bpm";
-const char PUBLISH_SKIN[] = "/anxiety-skin";
-const char RECEIVE_BPM[] = "/empathy-bpm";
-const char RECEIVE_SKIN[] = "/empathy-skin";
+const char PUBLISH_BPM[] = "/empathy-bpm";
+const char PUBLISH_SKIN[] = "/empathy-skin";
+const char RECEIVE_BPM[] = "/anxiety-bpm";
+const char RECEIVE_SKIN[] = "/anxiety-skin";
 const int SEND_INTERVAL = 450;
 unsigned long lastTransmit = 0;
 WiFiClient net;
@@ -41,6 +41,9 @@ int vibrationInterval = 100;
 boolean vibrationActive = false;
 boolean vibrationStatus[] = {false, false, false, false};
 unsigned long vibrationLastExec = 0;
+
+// Stepper
+int stepperInput = 0;
 
 void setup() {
 	Serial.begin(115200);
@@ -86,6 +89,7 @@ void loop() {
   	}
 
   	vibrationLoop();
+  	stepperLoop();
 }
 
 void connect() {
@@ -114,14 +118,23 @@ void messageReceived(String &topic, String &payload) {
 		updateVibrationInterval();
 	}
 	if (topic == RECEIVE_SKIN) {
-		// Currently not in use
+		stepperInput = payload.toInt();
+		updateStepperStatus();
 	}
+}
+
+void stepperLoop() {
+	// TODO
+}
+
+void updateStepperStatus() {
+	// TODO
 }
 
 void vibrationLoop() {
 	if (vibrationActive) {
 		if (vibrationLastExec + vibrationInterval * 4 > currentTime) {
-			for(int i = 0; i < 4; i++){
+			for(int i=0; i < 4; i++){
 			    vibrationStatus[i] = currentTime > vibrationLastExec + vibrationInterval * i 
 			    	&& currentTime < vibrationLastExec + vibrationInterval * (i + 1);
 			}
