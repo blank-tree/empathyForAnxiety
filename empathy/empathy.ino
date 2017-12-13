@@ -1,3 +1,14 @@
+/**
+ * empathyForAnxiety - empathy.ino
+ * TODO: short description
+ * @devices: arduino mkr1000, pulse sensor, galvanic skin response sensor, four vibration motors, stepper motor
+ * @author: Fernando Obieta - blanktree.ch
+ * @date: 171213
+ * @version: 0.2.01
+ * @license: DO WHAT THE FUCK YOU WANT TO - PUBLIC LICENSE
+ */
+
+
 #define USE_ARDUINO_INTERRUPTS false
 #include <PulseSensorPlayground.h>
 #include <WiFi101.h>
@@ -33,8 +44,8 @@ const int PIN_SKIN = A2;
 
 // Vibration
 const int VIBRATION_PINS[] = {6, 7, 8, 9};
-const int vibrationMapLow = 200;
-const int vibrationMapHigh = 500;
+const int vibrationMapLow = 200; // in ms
+const int vibrationMapHigh = 500; // in ms
 const int vibrationInputThreshold = 200;
 int vibrationInput = 400;
 int vibrationInterval = 100;
