@@ -4,7 +4,7 @@
  * @devices: arduino mkr1000, pulse sensor, galvanic skin response sensor, four vibration motors
  * @author: Fernando Obieta - blanktree.ch
  * @date: 171213
- * @version: 0.2.01
+ * @version: 0.2.02
  * @license: DO WHAT THE FUCK YOU WANT TO - PUBLIC LICENSE
  */
 
@@ -46,7 +46,7 @@ const int PIN_SKIN = A1;
 const int VIBRATION_PINS[] = {2, 3, 4, 5};
 const int vibrationMapLow = 200; // in ms
 const int vibrationMapHigh = 500; // in ms
-const int vibrationInputThreshold = 200;
+const int vibrationInputThreshold = 40;
 int vibrationInput = 400;
 int vibrationInterval = 100;
 boolean vibrationActive = false;
@@ -90,9 +90,9 @@ void loop() {
 		if (--samplesUntilReport == (byte) 0) {
 			samplesUntilReport = SAMPLES_PER_SERIAL_SAMPLE;
 
-     // pulseSensor.outputSample();
+     pulseSensor.outputSample();
 
-			if (pulseSensor.sawStartOfBeat()) {
+			if (pulseSensor.sawStartOfBeat() || true) {
 				if (currentTime - lastTransmit > SEND_INTERVAL) {
 					lastTransmit = currentTime;
 					client.publish(PUBLISH_BPM, String(pulseSensor.getBeatsPerMinute()));
