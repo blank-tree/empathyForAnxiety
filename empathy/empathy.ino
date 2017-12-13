@@ -179,7 +179,7 @@ void vibrationLoop() {
 
 void updateVibrationInterval() {
 	if (!vibrationActive && vibrationInput > vibrationInputThreshold) {
-		vibrationInterval = map(vibrationInput, 0, 1023, vibrationMapLow, vibrationMapHigh);
+		vibrationInterval = map(constrain(vibrationInput, 50, 120), 50, 120, vibrationMapLow, vibrationMapHigh);
 		vibrationLastExec = currentTime;
 		vibrationActive = true;
 	}
@@ -187,10 +187,6 @@ void updateVibrationInterval() {
 
 void activateVibration() {
 	for(int i=0; i < 4; i++){
-	    if (vibrationStatus[i]) {
-	    	analogWrite(VIBRATION_PINS[i], HIGH);
-	    } else {
-	    	analogWrite(VIBRATION_PINS[i], LOW);
-	    }
+	    digitalWrite(VIBRATION_PINS[i], vibrationStatus[i] ? HIGH : LOW);
 	}
 }

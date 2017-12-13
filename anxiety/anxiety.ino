@@ -32,7 +32,7 @@ PulseSensorPlayground pulseSensor;
 const int PIN_SKIN = A1;
 
 // Vibration
-const int VIBRATION_PINS[] = {6, 7, 8, 9};
+const int VIBRATION_PINS[] = {2, 3, 4, 5};
 const int vibrationMapLow = 200;
 const int vibrationMapHigh = 500;
 const int vibrationInputThreshold = 200;
@@ -44,6 +44,10 @@ unsigned long vibrationLastExec = 0;
 
 void setup() {
 	Serial.begin(115200);
+
+	for(int i = 0; i < 4; i++){
+	    pinMode(VIBRATION_PINS[i], OUTPUT);
+	}
 
 	WiFi.begin(ssid, pass);
 	client.begin("broker.shiftr.io", net);
@@ -111,12 +115,12 @@ void connect() {
 
 void messageReceived(String &topic, String &payload) {
 	// Serial.println("incoming: " + topic + " - " + payload);
-	if (topic.equals(RECEIVE_BPM)) {
+	if (topic == RECEIVE_BPM) {
 		vibrationInput = payload.toInt();
 		updateVibrationInterval();
 	}
 	
-	if (topic.equals(RECEIVE_SKIN)) {
+	if (topic == RECEIVE_SKIN) {
 		// Currently not in use
 	}
 }
@@ -140,7 +144,7 @@ void vibrationLoop() {
 
 void updateVibrationInterval() {
 	if (!vibrationActive && vibrationInput > vibrationInputThreshold) {
-		vibrationInterval = map(vibrationInput, 0, 1023, vibrationMapLow, vibrationMapHigh);
+		vibrationInterval = map(constrain(vibrationInput, 50, 120), 50, 120, vibrationMapLow, vibrationMapHigh);
 		vibrationLastExec = currentTime;
 		vibrationActive = true;
 	}
