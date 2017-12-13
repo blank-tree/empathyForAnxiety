@@ -32,7 +32,7 @@ PulseSensorPlayground pulseSensor;
 const int PIN_SKIN = A2;
 
 // Vibration
-const int VIBRATION_PINS[] = {2,3,4,5};
+const int VIBRATION_PINS[] = {6, 7, 8, 9};
 const int vibrationMapLow = 200;
 const int vibrationMapHigh = 500;
 const int vibrationInputThreshold = 200;
@@ -43,10 +43,23 @@ boolean vibrationStatus[] = {false, false, false, false};
 unsigned long vibrationLastExec = 0;
 
 // Stepper
+const int PIN_STEP = 3;
+const int PIN_DIRE = 5;
+const int STEPPER_THRESHOLD = 400;
+const int STEPPER_POSITION_MAX = 100;
+int stepperPosition = 0;
 int stepperInput = 0;
+boolean stepperDirection = false;
 
 void setup() {
 	Serial.begin(115200);
+
+	for(int i = 0; i < 4; i++){
+	    pinMode(VIBRATION_PINS[i], OUTPUT);
+	}
+
+	pinMode(PIN_STEP, OUTPUT);
+	pinMode(PIN_DIRE, OUTPUT);
 
 	WiFi.begin(ssid, pass);
 	client.begin("broker.shiftr.io", net);
@@ -124,11 +137,27 @@ void messageReceived(String &topic, String &payload) {
 }
 
 void stepperLoop() {
-	// TODO
+	if (stepperDirection) {
+		digitalWrite(PIN_DIRE, HIGH);
+		if (stepperPosition <= STEPPER_POSITION_MAX) {
+			digitalWrite(PIN_STEP, HIGH);
+			stepperPosition++;
+		} else {
+			digitalWrite(PIN_STEP, LOW);
+		}
+	} else {
+		digitalWrite(PIN_DIRE, LOW);
+		if (stepperPosition >= 0) {
+			digitalWrite(PIN_STEP, HIGH);
+			stepperPosition--;
+		} else {
+			digitalWrite(PIN_STEP, LOW);
+		}
+	}
 }
 
 void updateStepperStatus() {
-	// TODO
+	stepperDirection = stepperInput > STEPPER_THRESHOLD;
 }
 
 void vibrationLoop() {

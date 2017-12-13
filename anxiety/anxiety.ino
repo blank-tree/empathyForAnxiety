@@ -22,17 +22,17 @@ MQTTClient client;
 
 // Heart beat
 const int OUTPUT_TYPE = SERIAL_PLOTTER;
-const int PIN_BEAT = A1;
+const int PIN_BEAT = A0;
 const int THRESHOLD = 550;   // Adjust this number to avoid noise when idle
 const byte SAMPLES_PER_SERIAL_SAMPLE = 10;
 byte samplesUntilReport;
 PulseSensorPlayground pulseSensor;
 
 // Galvanic skin response sensor
-const int PIN_SKIN = A2;
+const int PIN_SKIN = A1;
 
 // Vibration
-const int VIBRATION_PINS[] = {2,3,4,5};
+const int VIBRATION_PINS[] = {6, 7, 8, 9};
 const int vibrationMapLow = 200;
 const int vibrationMapHigh = 500;
 const int vibrationInputThreshold = 200;
@@ -75,6 +75,8 @@ void loop() {
 		if (--samplesUntilReport == (byte) 0) {
 			samplesUntilReport = SAMPLES_PER_SERIAL_SAMPLE;
 
+     // pulseSensor.outputSample();
+
 			if (pulseSensor.sawStartOfBeat()) {
 				if (currentTime - lastTransmit > SEND_INTERVAL) {
 					lastTransmit = currentTime;
@@ -109,11 +111,12 @@ void connect() {
 
 void messageReceived(String &topic, String &payload) {
 	// Serial.println("incoming: " + topic + " - " + payload);
-	if (topic == RECEIVE_BPM) {
+	if (topic.equals(RECEIVE_BPM)) {
 		vibrationInput = payload.toInt();
 		updateVibrationInterval();
 	}
-	if (topic == RECEIVE_SKIN) {
+	
+	if (topic.equals(RECEIVE_SKIN)) {
 		// Currently not in use
 	}
 }
@@ -145,10 +148,6 @@ void updateVibrationInterval() {
 
 void activateVibration() {
 	for(int i=0; i < 4; i++){
-	    if (vibrationStatus[i]) {
-	    	analogWrite(VIBRATION_PINS[i], HIGH);
-	    } else {
-	    	analogWrite(VIBRATION_PINS[i], LOW);
-	    }
+	    digitalWrite(VIBRATION_PINS[i], vibrationStatus[i] ? HIGH : LOW);
 	}
 }
